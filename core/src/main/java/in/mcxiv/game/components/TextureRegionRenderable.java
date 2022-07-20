@@ -6,18 +6,16 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import in.mcxiv.game.main.MainEngine;
 
-public class SpriteRenderable extends Component {
+public class TextureRegionRenderable extends Component {
     public Vector2 offset = new Vector2();
     public Vector2 shape = new Vector2(1, 1);
     public TextureRegion image;
 
-    public SpriteRenderable construct(TextureRegion image, int w, int h) {
-        this.image = image;
-
-        return this;
+    public TextureRegionRenderable construct(TextureRegion image, int w, int h) {
+        return construct(image, 0, 0, w, h);
     }
 
-    public SpriteRenderable construct(TextureRegion image, float x_o, float y_o, float w, float h) {
+    public TextureRegionRenderable construct(TextureRegion image, float x_o, float y_o, float w, float h) {
         this.image = image;
         this.offset.set(x_o, y_o).scl(MainEngine.TILE);
         this.shape.set(w, h).scl(MainEngine.TILE);

@@ -7,8 +7,10 @@ import com.artemis.World;
 import com.artemis.annotations.All;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import in.mcxiv.game.components.AnimationRenderable;
 import in.mcxiv.game.components.MapCell;
 import in.mcxiv.game.components.Position;
 import in.mcxiv.game.components.SpawnPoint;
@@ -25,12 +27,18 @@ public class MapRenderingSystem extends IteratingSystem {
             .add(Position.class)
             .add(MapCell.class);
 
+    private static final ArchetypeBuilder SPAWN_POINT_ARCHETYPE = new ArchetypeBuilder()
+            .add(Position.class)
+            .add(SpawnPoint.class)
+            .add(AnimationRenderable.class);
+
     protected ComponentMapper<Position> position;
     protected ComponentMapper<MapCell> mapCell;
-    protected ComponentMapper<SpawnPoint> spawnPoint;
+    protected ComponentMapper<AnimationRenderable> animationRenderable;
 
     private Batch batch;
     private Archetype mapCellArchetype;
+    private Archetype spawnPointArchetype;
 
     @Override
     // TODO: Should it be `initialize` or `begin`?
@@ -43,6 +51,7 @@ public class MapRenderingSystem extends IteratingSystem {
     protected void setWorld(World world) {
         super.setWorld(world);
         this.mapCellArchetype = MAP_CELL_ARCHETYPE.build(world);
+        this.spawnPointArchetype = SPAWN_POINT_ARCHETYPE.build(world);
     }
 
     public void loadMap(String path, World world) {
@@ -62,9 +71,9 @@ public class MapRenderingSystem extends IteratingSystem {
                     this.position.get(entity).position.set(x, y);
                     this.mapCell.get(entity).construct(v);
                 } else if (v == -1) {
-                    int entity = this.world.create();
+                    int entity = this.world.create(spawnPointArchetype);
                     this.position.create(entity).position.set(x, y);
-                    this.spawnPoint.create(entity);
+                    this.animationRenderable.get(entity).construct(Resources.getInstance().flagAnimation, Color.GREEN, -0.5f, 1, 2, 2);
                 }
             }
         }

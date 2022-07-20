@@ -20,7 +20,7 @@ import com.kotcrab.vis.ui.widget.VisTable;
 import in.mcxiv.game.main.MainEngine;
 import in.mcxiv.game.main.Resources;
 import in.mcxiv.game.systems.MapRenderingSystem;
-import in.mcxiv.game.systems.SpritesRenderingSystem;
+import in.mcxiv.game.systems.TextureRegionRenderingSystem;
 import in.mcxiv.game.util.GdxUtils;
 import in.mcxiv.game.util.InputProcessorIAdapter;
 
@@ -33,7 +33,7 @@ public class MapViewerScreen extends ScreenAdapter implements InputProcessorIAda
     private static final WorldConfiguration CONFIGURATION = new WorldConfigurationBuilder()
             .with(
                     new MapRenderingSystem(),
-                    new SpritesRenderingSystem()
+                    new TextureRegionRenderingSystem()
             ).build();
 
     //////////////////////////

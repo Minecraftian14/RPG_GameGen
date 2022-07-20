@@ -10,6 +10,7 @@ buildscript {
 	}
 	dependencies {
 		classpath "com.android.tools.build:gradle:$androidPluginVersion"
+		classpath "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
 
 		// This follows advice from https://blog.gradle.org/log4j-vulnerability
 		constraints {
@@ -62,6 +63,13 @@ subprojects {
 		maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
 		maven { url 'https://jitpack.io/#space.earlygrey' }
 		maven { url 'https://jitpack.io/#in.mcxiv' }
+	}
+}
+
+import com.badlogic.gdx.tools.texturepacker.TexturePacker;
+task packResources {
+	doLast {
+		TexturePacker.process("assets_raw", "assets/packed", "packed")
 	}
 }
 
