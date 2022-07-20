@@ -82,8 +82,9 @@ public class MapViewerScreen extends ScreenAdapter implements InputProcessorIAda
         mouseCoords.set(camera.position);
 
         world = new World(CONFIGURATION);
-        world.getSystem(MapRenderingSystem.class)
-                .loadMap("default_world.bitmap", world);
+        MapRenderingSystem system = world.getSystem(MapRenderingSystem.class);
+        system.loadMap("default_world.bitmap");
+        system.setCamera(camera);
     }
 
     @Override

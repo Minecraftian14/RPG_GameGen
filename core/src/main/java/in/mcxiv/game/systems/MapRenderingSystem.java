@@ -7,17 +7,21 @@ import com.artemis.World;
 import com.artemis.annotations.All;
 import com.artemis.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import in.mcxiv.game.components.AnimationRenderable;
 import in.mcxiv.game.components.MapCell;
 import in.mcxiv.game.components.Position;
 import in.mcxiv.game.components.SpawnPoint;
 import in.mcxiv.game.main.Resources;
+import in.mcxiv.game.util.GdxUtils;
 
 import java.util.Scanner;
 
+import static in.mcxiv.game.main.MainEngine.INV_TILE;
 import static in.mcxiv.game.main.MainEngine.TILE;
 
 @All({MapCell.class, Position.class})
@@ -40,6 +44,10 @@ public class MapRenderingSystem extends IteratingSystem {
     private Archetype mapCellArchetype;
     private Archetype spawnPointArchetype;
 
+    private Camera camera = null;
+    private Vector3 lowerBound = new Vector3();
+    private Vector3 upperBound = new Vector3();
+
     @Override
     // TODO: Should it be `initialize` or `begin`?
     protected void initialize() {
@@ -54,7 +62,7 @@ public class MapRenderingSystem extends IteratingSystem {
         this.spawnPointArchetype = SPAWN_POINT_ARCHETYPE.build(world);
     }
 
-    public void loadMap(String path, World world) {
+    public void loadMap(String path) {
 
         Scanner sc = new Scanner(Gdx.files.internal(path).read(64));
 
@@ -79,10 +87,21 @@ public class MapRenderingSystem extends IteratingSystem {
         }
     }
 
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+
+    @Override
+    protected void begin() {
+        if (camera == null) return;
+        GdxUtils.getLowerBoundOfTheVisibleRectangle(camera, lowerBound);
+        GdxUtils.getUpperBoundOfTheVisibleRectangle(camera, upperBound);
+    }
+
     @Override
     protected void process(int entityId) {
-        // TODO: Check if the cell needs drawing if it's in the screen. Draw only if required.
         Vector2 position = this.position.get(entityId).position;
+        if (camera != null && GdxUtils.isPointNotInVisibleRectangle(position, lowerBound, upperBound)) return;
         batch.draw(
                 this.mapCell.get(entityId).texture,
                 position.x * TILE, position.y * TILE,
