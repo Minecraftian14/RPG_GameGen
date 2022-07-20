@@ -16,11 +16,13 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.kotcrab.vis.ui.widget.VisLabel;
 import com.kotcrab.vis.ui.widget.VisTable;
+import com.kotcrab.vis.ui.widget.VisTextArea;
 import in.mcxiv.game.main.MainEngine;
 import in.mcxiv.game.main.Resources;
-import in.mcxiv.game.systems.MapRenderingSystem;
-import in.mcxiv.game.systems.TextureRegionRenderingSystem;
+import in.mcxiv.game.main.maps.MapLoader;
+import in.mcxiv.game.systems.GeneralRenderingSystem;
 import in.mcxiv.game.util.GdxUtils;
 import in.mcxiv.game.util.InputProcessorIAdapter;
 
@@ -31,15 +33,13 @@ public class MapViewerScreen extends ScreenAdapter implements InputProcessorIAda
 
     public static final float CAMERA_MOVEMENT_SPEED = 2.5f;
     private static final WorldConfiguration CONFIGURATION = new WorldConfigurationBuilder()
-            .with(
-                    new MapRenderingSystem(),
-                    new TextureRegionRenderingSystem()
-            ).build();
+            .with(new GeneralRenderingSystem()).build();
 
     //////////////////////////
 
     public Stage mainStage;
     public VisTable mainTable;
+    public MapLoader mapLoader;
 
     //////////////////////////
 
@@ -68,6 +68,13 @@ public class MapViewerScreen extends ScreenAdapter implements InputProcessorIAda
         mainTable.setFillParent(true);
         mainTable.add(GdxUtils.createButton("Back", () -> MainEngine.getInstance().setScreen(MainEngine.getInstance().srn_home)))
                 .expand().pad(10).align(Align.topLeft);
+        mainTable.add(new VisLabel("" +
+                                   "Use WASD to move around\n" +
+                                   "Another line of instruction\n" +
+                                   "just to see the multiline\n" +
+                                   "in action." +
+                                   ""))
+                .expand().pad(10).align(Align.bottomRight);
         mainStage.addActor(mainTable);
 
         Gdx.input.setInputProcessor(new InputMultiplexer(mainStage, this));
@@ -82,21 +89,21 @@ public class MapViewerScreen extends ScreenAdapter implements InputProcessorIAda
         mouseCoords.set(camera.position);
 
         world = new World(CONFIGURATION);
-        MapRenderingSystem system = world.getSystem(MapRenderingSystem.class);
-        system.loadMap("default_world.bitmap");
-        system.setCamera(camera);
+        world.getSystem(GeneralRenderingSystem.class).setCamera(camera);
+
+        mapLoader = new MapLoader(world);
+        mapLoader.loadMap("default_world.bitmap");
     }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.15f, 0.15f, 0.2f, 1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         snapMouseCoordinates();
         processInputsBasedStateChanging();
 
         camera.update();
         res.batch.setProjectionMatrix(camera.combined);
+        Gdx.gl.glClearColor(0.15f, 0.15f, 0.2f, 1f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         res.batch.begin();
 
         world.setDelta(delta);

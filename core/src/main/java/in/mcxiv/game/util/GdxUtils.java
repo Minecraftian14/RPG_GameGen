@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.kotcrab.vis.ui.widget.VisTextButton;
 
 import static in.mcxiv.game.main.MainEngine.INV_TILE;
+import static in.mcxiv.game.main.MainEngine.TILE;
 
 public class GdxUtils {
 
@@ -30,12 +31,12 @@ public class GdxUtils {
 
     public static void getLowerBoundOfTheVisibleRectangle(Camera camera, Vector3 bound) {
         bound.set(0, Gdx.graphics.getHeight(), 0);
-        camera.unproject(bound).scl(INV_TILE).sub(1, 1, 0);
+        camera.unproject(bound).sub(TILE, TILE, 0);
     }
 
     public static void getUpperBoundOfTheVisibleRectangle(Camera camera, Vector3 bound) {
         bound.set(Gdx.graphics.getWidth(), 0, 0);
-        camera.unproject(bound).scl(INV_TILE);
+        camera.unproject(bound);
     }
 
     public static boolean isPointNotInVisibleRectangle(Vector2 position, Vector3 lowerBound, Vector3 upperBound) {

@@ -11,7 +11,7 @@ import in.mcxiv.game.main.screens.MapViewerScreen;
  */
 public class MainEngine extends Game {
 
-    public static final boolean VR_DEBUGGING = true;
+    public static final boolean VR_DEBUGGING = false;
 
     public static void ifDebugging(Runnable action) {
         if (VR_DEBUGGING) action.run();
